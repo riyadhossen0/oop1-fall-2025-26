@@ -1,65 +1,111 @@
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Scanner;
-public class MortgageCalculator{
+
+public class MortgageCalculator {
+
     public static void main(String[] args) {
-      Scanner sc = new Scanner(System.in);
-      System.out.print("Enter Your Salary:");
-      double salary = 0;
-      if(sc.hasNextDouble()){
-        salary = sc.nextDouble();
-        System.out.print("Enter Your Credit Score(0-500): ");
-        int credit = sc.nextInt();
-        if(credit > 500){
-          System.out.println("Enter A Valid Credit Score(0-500)");
-        }else{
-          System.out.print("Do You Have Any Criminal Record(eg:true/false): ");
-          boolean record = false;
-          if(sc.hasNextBoolean()){
-            record = sc.nextBoolean();
+        Scanner scanner = new Scanner(System.in);
+        double salary = getMySalary(scanner);
+        double credit = getMyCredit(scanner);
+        boolean criminalRecord = getMyCriminal(scanner);
+        
 
-            if (record == true) {
-              System.out.println("You are not eligible for loan.");
+        if (criminalRecord == true || credit < 300) {
+              System.out.println("Sorry,You are not eligible for loan.");
             }else{
-              double loan = salary*2;
+      
+        
+        System.out.println("=== Bangladesh Mortgage Calculator (BDT) ===");
 
-              System.out.println("=== Bangladesh Mortgage Calculator (Dollar) ===");
-              System.out.print("Enter loan amount (principal in BDT): ");
-              double principal = sc.nextDouble();
+        System.out.print("Enter loan amount (Principal in BDT): ");
+        double principal = scanner.nextDouble();
+        double loan = salary*2;
+         if (loan > principal) {
+            System.out.println(" Congratulations! You are eligible for the loan.");
+       
 
-              if (( principal <= loan && credit >= 300) && record==false ){
-                System.out.print("Enter annual interest rate: ");
-                float interest = sc.nextFloat();
-                System.out.print("Enter loan period (in years): ");
-                int years = sc.nextInt();
-                float interestRate = (interest / 100 / 12);  
-                int totalMonth = years * 12;
+        System.out.print("Enter annual interest rate (e.g., 8.5 for 8.5%): ");
+        double annualInterestRate = scanner.nextDouble();
 
-                double mortgage = (double) principal * ( interestRate* Math.pow(1 + interestRate, totalMonth)) / (Math.pow(1 + interestRate, totalMonth) - 1); 
-                double totalPayment = mortgage * totalMonth;
-                double totalInterest = totalPayment - principal;
+        System.out.print("Enter loan period (in years): ");
+        int years = scanner.nextInt();
 
-                Locale bdlocale = Locale.of("en", "BD");
-                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(bdlocale);
-                System.out.println("=== Mortgage Summary ===");
-                System.out.println("Loan Amount: "+currencyFormatter.format(principal));
-                String monthlyInterest = currencyFormatter.format(mortgage);
-                System.out.println("Monthly Payment: "+monthlyInterest);
-                String totalAmmount = currencyFormatter.format(totalPayment);
-                System.out.println("Total Payment: "+totalAmmount);
-                String interestAmmount = currencyFormatter.format(totalInterest);
-                System.out.println("Total Interest: "+interestAmmount);
-                sc.close();
-              }else{
-                System.out.println("You Are Not Eligeble For Loan.");
-              }
-            }
-          }else{
-            System.out.println("Enter A Valid Record(eg:true/false)");
-          }
-        }
-      }else{
-        System.out.println("Invalid input.Please enter a number.");
+       
+        double monthlyInterestRate = (annualInterestRate / 100) / 12;
+        int numberOfPayments = years * 12;
+
+        double mortgagePayment = principal
+                * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments))
+                / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
+
+       
+        double totalPayment = mortgagePayment * numberOfPayments;
+        double totalInterest = totalPayment - principal;
+
+       
+        Locale bdLocale = Locale.of("en", "BD");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(bdLocale);
+
+        System.out.println("\n=== Mortgage Summary ===");
+        System.out.println("Loan Amount: " + currencyFormatter.format(principal));
+        System.out.println("Monthly Payment: " + currencyFormatter.format(mortgagePayment));
+        System.out.println("Total Payment: " + currencyFormatter.format(totalPayment));
+        System.out.println("Total Interest: " + currencyFormatter.format(totalInterest));
+         } else {
+            System.out.println("Sorry,You are not eligible for loan.");
       }
-    }  
+    }
 }
+
+        public static double getMySalary(Scanner scanner) {
+        double salary = 0;
+        while (true) {
+            System.out.print("Enter your monthly salary (in BDT): ");
+            if (scanner.hasNextDouble()) {
+                salary = scanner.nextDouble();
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+    }
+    return salary;
+  
+}
+        public static double getMyCredit(Scanner scanner) {
+        double credit = 0;
+        while (true) {
+            System.out.print("Enter your credit score (0-500): ");
+            if (scanner.hasNextDouble()) {
+                credit = scanner.nextDouble();
+                if (credit >= 0 && credit <= 500) {
+
+                    break;
+                }else{
+                    System.out.println("Credit Score Must be between 0 to 500.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a credit score(0-500).");
+                scanner.next();
+            }
+    }
+    return credit;
+  
+}
+        public static boolean getMyCriminal(Scanner scanner) {
+        boolean criminalRecord = false;
+        while (true) {
+            System.out.print("Do you have any criminal Record(true/false): ");
+            if (scanner.hasNextBoolean()) {
+                criminalRecord = scanner.nextBoolean();
+                   break;
+                } else {
+                System.out.println("Invalid input. Please enter true/false.");
+                scanner.next();
+            }
+        }
+        return criminalRecord;
+    }
+}
+  
